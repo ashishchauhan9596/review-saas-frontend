@@ -169,149 +169,173 @@ export default function ReviewLandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white p-6 md:p-12 selection:bg-blue-500/30">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          {business.logoUrl && (
-            <img 
-              src={business.logoUrl} 
-              alt={business.businessName} 
-              className="w-24 h-24 rounded-2xl mx-auto mb-6 object-cover border border-white/10 shadow-2xl"
-            />
-          )}
-          <h1 className="text-3xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
-            {business.businessName}
-          </h1>
-          <p className="text-gray-400">Share your experience and support us!</p>
-        </div>
+    <div className="min-h-screen bg-[#050505] text-white p-3 sm:p-6 md:p-10 selection:bg-blue-500/30 relative overflow-hidden flex flex-col items-center justify-center">
+      {/* Background Magic - Wide Orbs */}
+      <div className="absolute top-[-20%] left-[-10%] w-[100%] h-[100%] bg-blue-600/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[100%] h-[100%] bg-purple-600/5 rounded-full blur-[120px] pointer-events-none" />
+      
+      {/* 50 Animated Floating Particles (Love & Magic) */}
+      {[...Array(50)].map((_, i) => {
+        const Icon = [Heart, Star, Sparkles, Zap][i % 4];
+        const colors = ["text-blue-500", "text-purple-500", "text-pink-500", "text-yellow-500"];
+        return (
+          <div 
+            key={i}
+            className={`absolute opacity-[0.05] animate-pulse pointer-events-none ${colors[i % 4]}`}
+            style={{
+              top: `${(i * 13.7) % 100}%`,
+              left: `${(i * 19.3) % 100}%`,
+              animationDelay: `${i * 0.2}s`,
+              animationDuration: `${2 + (i % 6)}s`,
+              transform: `rotate(${(i * 33) % 360}deg) scale(${0.3 + (i % 4) * 0.15})`
+            }}
+          >
+            <Icon className="w-3 h-3 sm:w-5 sm:h-5" />
+          </div>
+        );
+      })}
 
-        {/* Language Selection */}
-        <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-6 mb-4 backdrop-blur-xl">
-          <h2 className="text-sm font-semibold mb-4 flex items-center gap-2 text-gray-400 uppercase tracking-widest">
-            <Globe className="w-4 h-4 text-blue-400" />
-            {selectedLanguage === "Hindi" ? "समीक्षा भाषा चुनें" : 
-             selectedLanguage === "Pahadi" ? "समीक्षा री भाषा चुणा" : 
-             "Select Review Language"}
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {languages.map((lang) => (
+      <div className="w-full max-w-4xl relative z-10 flex flex-col gap-4">
+        {/* Main Bento Container */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+          
+          {/* Left Column: Profile & Language (30%) */}
+          <div className="md:col-span-4 flex flex-col gap-4">
+            <div className="bg-white/[0.03] border border-white/10 rounded-[2rem] p-6 flex flex-col items-center text-center backdrop-blur-xl h-full justify-center shadow-2xl relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              {business.logoUrl && (
+                <img 
+                  src={business.logoUrl} 
+                  alt={business.businessName} 
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl mb-4 object-cover border border-white/10 shadow-lg relative z-10"
+                />
+              )}
+              <h1 className="text-2xl sm:text-3xl font-black mb-2 tracking-tighter leading-tight relative z-10">{business.businessName}</h1>
+              <div className="flex items-center gap-1.5 text-blue-400 font-bold text-[10px] uppercase tracking-widest relative z-10">
+                <Heart className="w-3 h-3 fill-current" />
+                <span>Top Rated</span>
+              </div>
+            </div>
+
+            <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 backdrop-blur-xl">
+              <h2 className="text-xs font-black mb-4 text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                <Globe className="w-4 h-4 text-blue-400" /> 
+                {selectedLanguage === "Hindi" ? "भाषा चुनें" : selectedLanguage === "Pahadi" ? "बोली चुणा" : "Select Language"}
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {languages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => { 
+                      if (selectedLanguage !== lang.name) {
+                        setSelectedLanguage(lang.name);
+                        setInitialTagsLoaded(false); 
+                      }
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border transition-all text-xs font-bold ${
+                      selectedLanguage === lang.name ? "bg-white text-black border-white shadow-lg" : "bg-white/5 border-white/5 text-gray-400"
+                    }`}
+                  >
+                    <span>{lang.flag}</span>
+                    <span className="hidden sm:inline">{lang.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Tags & Generation (70%) */}
+          <div className="md:col-span-8 flex flex-col gap-4">
+            <div className="bg-white/[0.03] border border-white/10 rounded-[2rem] p-6 sm:p-8 backdrop-blur-xl shadow-2xl relative flex-1">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl sm:text-2xl font-black flex items-center gap-2 uppercase tracking-tight">
+                  <Sparkles className="w-5 h-5 text-yellow-400" />
+                  {selectedLanguage === "Hindi" ? "आपको क्या पसंद आया?" : 
+                   selectedLanguage === "Pahadi" ? "तुसां जो क्या पसंद आया?" : 
+                   "What did you love?"}
+                </h2>
+                <div className="bg-blue-600/20 px-4 py-1 rounded-full border border-blue-500/30">
+                  <span className="text-sm font-black text-blue-400">{selectedTags.length}/4</span>
+                </div>
+              </div>
+
+              {!initialTagsLoaded ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+                  {[...Array(6)].map((_, i) => <div key={i} className="h-14 bg-white/5 rounded-xl animate-pulse" />)}
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+                  {tags.map((tag) => (
+                    <button
+                      key={tag.id}
+                      onClick={() => toggleTag(tag.label)}
+                      className={`flex items-center gap-2 px-3 py-4 rounded-xl border transition-all relative group ${
+                        selectedTags.includes(tag.label) ? "bg-blue-600 border-blue-500 text-white shadow-lg" : "bg-white/5 border-white/5 text-gray-400 hover:border-white/20"
+                      }`}
+                    >
+                      <span className="text-xl sm:text-2xl">{tag.icon}</span>
+                      <span className="font-black text-[10px] sm:text-[11px] uppercase tracking-tight text-left leading-tight">{tag.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
               <button
-                key={lang.code}
-                onClick={() => {
-                  if (selectedLanguage === lang.name) return;
-                  setSelectedLanguage(lang.name);
-                  setInitialTagsLoaded(false); // Trigger skeleton for tags
-                  setAiReview(""); // Clear old review
-                }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all duration-300 text-sm font-medium ${
-                  selectedLanguage === lang.name
-                    ? "bg-blue-600/20 border-blue-500/50 text-blue-400"
-                    : "bg-white/[0.02] border-white/5 text-gray-400 hover:border-white/20"
-                }`}
+                onClick={generateReview}
+                disabled={selectedTags.length < 4 || isGenerating}
+                className="w-full mt-8 bg-blue-600 hover:bg-blue-500 disabled:bg-white/5 disabled:text-gray-700 py-4 sm:py-5 rounded-2xl font-black text-sm sm:text-lg transition-all flex items-center justify-center gap-3 shadow-xl active:scale-[0.98]"
               >
-                <span>{lang.flag}</span>
-                {lang.name}
+                {isGenerating ? <Loader2 className="w-6 h-6 animate-spin" /> : <Zap className="w-5 h-5 fill-current" />}
+                {selectedLanguage === "Hindi" ? "AI समीक्षा तैयार करें" : 
+                 selectedLanguage === "Pahadi" ? "AI समीक्षा बणावा" : 
+                 "GENERATE AI REVIEW"}
               </button>
-            ))}
+            </div>
           </div>
         </div>
 
-        {/* Tag Selection */}
-        <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-8 mb-8 backdrop-blur-xl">
-          <h2 className="text-lg font-semibold flex items-center gap-2 mb-2">
-            <Sparkles className="w-5 h-5 text-yellow-500" />
-            {selectedLanguage === "Hindi" ? "आपको क्या पसंद आया?" : 
-             selectedLanguage === "Pahadi" ? "तुसां जो क्या पसंद आया?" : 
-             "What did you love?"}
-          </h2>
-
-          {selectedTags.length < 4 && (
-            <p className="text-xs font-medium text-gray-400 mb-6 flex items-center gap-2 animate-pulse">
-              {selectedLanguage === "Hindi" ? `कृपया कम से कम 4 टैग चुनें (${selectedTags.length}/4)` : 
-               selectedLanguage === "Pahadi" ? `कम से कम 4 टैग चुणा (${selectedTags.length}/4)` : 
-               `Please select at least 4 tags (${selectedTags.length}/4)`}
-            </p>
-          )}
-
-          {!initialTagsLoaded ? (
-            <div className="grid grid-cols-2 gap-3">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-14 bg-white/5 rounded-2xl animate-pulse" />
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-3">
-              {tags.map((tag) => (
-                <button
-                  key={tag.id}
-                  onClick={() => toggleTag(tag.label)}
-                  className={`flex items-center gap-3 p-4 rounded-2xl border transition-all duration-300 ${
-                    selectedTags.includes(tag.label)
-                      ? "bg-blue-600/20 border-blue-500/50 text-blue-400"
-                      : "bg-white/[0.02] border-white/5 text-gray-400 hover:border-white/20"
-                  }`}
-                >
-                  <span className="text-xl">{tag.icon}</span>
-                  <span className="font-medium text-sm">{tag.label}</span>
-                </button>
-              ))}
-            </div>
-          )}
-
-          <button
-            onClick={generateReview}
-            disabled={selectedTags.length < 4 || isGenerating}
-            className="w-full mt-8 bg-blue-600 hover:bg-blue-500 disabled:bg-white/10 disabled:text-gray-500 py-4 rounded-2xl font-semibold transition-all flex items-center justify-center gap-2"
-          >
-            {isGenerating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Zap className="w-5 h-5 fill-current" />}
-            {selectedLanguage === "Hindi" ? "AI समीक्षा तैयार करें" : 
-             selectedLanguage === "Punjabi" ? "AI ਸਮੀਖਿਆ ਬਣਾਓ" : 
-             selectedLanguage === "Pahadi" ? "AI समीक्षा बणावा" : 
-             "Generate AI Review"}
-          </button>
-        </div>
-
-        {/* AI Result */}
+        {/* AI Result - Full Width Bottom */}
         {aiReview && (
-          <div className="bg-gradient-to-br from-blue-600/10 to-purple-600/10 border border-blue-500/20 rounded-3xl p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-sm font-semibold text-blue-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-              <MessageSquare className="w-4 h-4" />
-              Your AI Assistant Wrote:
-            </h2>
-
-            <p className="text-lg leading-relaxed text-white/90 mb-8 italic">
-              "{aiReview}"
-            </p>
-            
-            <button
-              onClick={handleCopyAndRedirect}
-              className="w-full bg-white text-black hover:bg-gray-200 py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 shadow-xl shadow-white/5"
-            >
-              {copied ? (
-                <>
-                  <Check className="w-5 h-5" />
-                  Copied! Opening Google...
-                </>
-              ) : (
-                <>
-                  <Copy className="w-5 h-5" />
-                  Copy & Write Review on Google
-                </>
-              )}
-            </button>
-            <p className="text-center text-xs text-gray-500 mt-4">
-              Step 1: Click button to copy. Step 2: Paste on Google.
-            </p>
+          <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white rounded-[2rem] p-6 sm:p-10 shadow-2xl animate-in fade-in zoom-in-95 duration-500 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+               <Zap className="w-32 h-32 rotate-12" />
+            </div>
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+              <div className="flex-1">
+                <h2 className="text-[10px] font-black text-white/60 uppercase tracking-[0.3em] mb-4">
+                  {selectedLanguage === "Hindi" ? "तैयार समीक्षा" : 
+                   selectedLanguage === "Pahadi" ? "बणी दी समीक्षा" : 
+                   "Magic Ready"}
+                </h2>
+                <p className="text-xl sm:text-2xl font-bold leading-tight tracking-tight italic">"{aiReview}"</p>
+              </div>
+              <button
+                onClick={handleCopyAndRedirect}
+                className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-5 rounded-2xl font-black text-base transition-all shadow-2xl flex items-center gap-3 whitespace-nowrap"
+              >
+                {copied ? 
+                  (selectedLanguage === "Hindi" ? "नकल हो गई!" : selectedLanguage === "Pahadi" ? "नकल हुई गी!" : "Copied!") : 
+                  <><Copy className="w-5 h-5" /> 
+                    {selectedLanguage === "Hindi" ? "कॉपी और पोस्ट" : 
+                     selectedLanguage === "Pahadi" ? "कॉपी करी के पोस्ट करा" : 
+                     "Copy & Post"}
+                  </>
+                }
+              </button>
+            </div>
           </div>
         )}
 
-        {/* Footer */}
-        <div className="text-center mt-12 opacity-60 hover:opacity-100 transition-opacity">
-          <div className="flex flex-col items-center gap-2">
-            <img src="/logo.png" alt="Logo" className="w-12 h-auto opacity-50" />
+        {/* Minimal Footer */}
+        <footer className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-6">
+          <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-full border border-white/5 backdrop-blur-xl">
+            <img src="/logo.png" alt="Logo" className="w-6 h-auto" />
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60">AI Google Review</span>
           </div>
-        </div>
+          <p className="text-[8px] text-gray-700 font-bold uppercase tracking-widest">
+            Handcrafted for {business.businessName}
+          </p>
+        </footer>
       </div>
     </div>
   );

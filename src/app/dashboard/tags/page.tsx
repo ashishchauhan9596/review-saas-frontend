@@ -170,12 +170,10 @@ export default function TagsManagerPage() {
       {/* Sidebar (Reused) */}
       <aside className="hidden lg:flex fixed inset-y-0 left-0 z-50 w-72 flex-col bg-[#0A0A0A] border-r border-white/5 transition-transform duration-300">
         <div className="h-20 flex items-center gap-3 px-6 mb-4">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20 ring-1 ring-white/20">
-            <Zap className="w-5 h-5 text-white fill-current" />
-          </div>
-          <div>
-            <span className="font-bold text-lg tracking-tight block">Review Stack</span>
-            <span className="text-[10px] text-blue-400 font-bold uppercase tracking-[0.2em] leading-none">Intelligence</span>
+          <img src="/logo.png" alt="Logo" className="w-10 h-auto" />
+          <div className="flex flex-col">
+            <span className="text-[10px] font-black text-white/80 uppercase tracking-[0.2em] leading-tight">AI Google</span>
+            <span className="text-[8px] font-medium text-white/30 uppercase tracking-[0.3em] leading-tight">Review Agent</span>
           </div>
         </div>
 

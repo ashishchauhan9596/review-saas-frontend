@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "googleReviewAI · Automated Google Feedback",
+  title: "AI Google Review · Automated Google Feedback",
   description: "Automated Google Feedback Optimization — Smart Review QR Engine",
 };
 
