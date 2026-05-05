@@ -307,10 +307,10 @@ export default function ReviewLandingPage() {
         )}
 
         {/* Footer */}
-        <div className="text-center mt-12 opacity-40 hover:opacity-100 transition-opacity">
-          <p className="text-xs flex items-center justify-center gap-1">
-            Powered by <span className="font-bold">Review Stack AI</span> <Heart className="w-3 h-3 fill-current text-red-500" />
-          </p>
+        <div className="text-center mt-12 opacity-60 hover:opacity-100 transition-opacity">
+          <div className="flex flex-col items-center gap-2">
+            <img src="/logo.png" alt="Logo" className="w-12 h-auto opacity-50" />
+          </div>
         </div>
       </div>
     </div>

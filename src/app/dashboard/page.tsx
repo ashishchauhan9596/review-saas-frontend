@@ -316,13 +316,11 @@ export default function Dashboard() {
         ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
       `}>
         {/* Brand */}
-        <div className="h-20 flex items-center gap-3 px-6 mb-4">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20 ring-1 ring-white/20">
-            <Zap className="w-5 h-5 text-white fill-current" />
-          </div>
-          <div>
-            <span className="font-bold text-lg tracking-tight block">Review Stack</span>
-            <span className="text-[10px] text-blue-400 font-bold uppercase tracking-[0.2em] leading-none">Intelligence</span>
+        <div className="h-20 flex items-center gap-3 px-6 mb-2 border-b border-white/5">
+          <img src="/logo.png" alt="Logo" className="w-12 h-auto object-contain" />
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold text-white/70 uppercase tracking-[0.1em] leading-tight">Google Review</span>
+            <span className="text-[8px] font-medium text-white/30 uppercase tracking-[0.2em] leading-tight">AI Agent</span>
           </div>
         </div>
 
