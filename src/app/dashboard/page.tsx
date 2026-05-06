@@ -27,7 +27,8 @@ import {
   Edit2,
   Trash2,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Users
 } from "lucide-react";
 import Link from "next/link";
 
@@ -344,8 +345,8 @@ export default function Dashboard() {
         <div className="h-20 flex items-center gap-3 px-6 mb-2 border-b border-white/5">
           <img src="/logo.png" alt="Logo" className="w-12 h-auto object-contain" />
           <div className="flex flex-col">
-            <span className="text-[10px] font-bold text-white/70 uppercase tracking-[0.1em] leading-tight">AI Google</span>
-            <span className="text-[8px] font-medium text-white/30 uppercase tracking-[0.2em] leading-tight">Review Agent</span>
+            <span className="text-[10px] font-bold text-white/70 uppercase tracking-[0.1em] leading-tight">ReviewStack</span>
+            <span className="text-[8px] font-medium text-white/30 uppercase tracking-[0.2em] leading-tight">AI Agent</span>
           </div>
         </div>
 
@@ -359,6 +360,10 @@ export default function Dashboard() {
           <Link href="/dashboard/tags" className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-400 hover:bg-white/5 hover:text-white border border-transparent text-sm font-semibold transition-all">
             <Tags className="w-5 h-5" />
             Manage Tags
+          </Link>
+          <Link href="/dashboard/leads" className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-400 hover:bg-white/5 hover:text-white border border-transparent text-sm font-semibold transition-all">
+            <Users className="w-5 h-5" />
+            View Leads
           </Link>
         </nav>
 

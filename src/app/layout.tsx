@@ -10,8 +10,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "AI Google Review · Automated Google Feedback",
-  description: "Automated Google Feedback Optimization — Smart Review QR Engine",
+  title: "ReviewStack AI · The Future of Reputation Management",
+  description: "Scale your Google Reviews with AI-powered synthesis and atomic deep linking.",
 };
 
 export default function RootLayout({

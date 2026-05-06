@@ -16,7 +16,8 @@ import {
   ChevronLeft, 
   ChevronRight,
   Save,
-  X
+  X,
+  Users
 } from "lucide-react";
 
 interface IndustryTag {
@@ -172,8 +173,8 @@ export default function TagsManagerPage() {
         <div className="h-20 flex items-center gap-3 px-6 mb-4">
           <img src="/logo.png" alt="Logo" className="w-10 h-auto" />
           <div className="flex flex-col">
-            <span className="text-[10px] font-black text-white/80 uppercase tracking-[0.2em] leading-tight">AI Google</span>
-            <span className="text-[8px] font-medium text-white/30 uppercase tracking-[0.3em] leading-tight">Review Agent</span>
+            <span className="text-[10px] font-black text-white/80 uppercase tracking-[0.2em] leading-tight">ReviewStack</span>
+            <span className="text-[8px] font-medium text-white/30 uppercase tracking-[0.3em] leading-tight">AI Agent</span>
           </div>
         </div>
 
@@ -184,6 +185,9 @@ export default function TagsManagerPage() {
           </Link>
           <Link href="/dashboard/tags" className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all bg-blue-600/10 text-blue-400 border border-blue-500/10">
             <Tags className="w-5 h-5" /> Manage Tags
+          </Link>
+          <Link href="/dashboard/leads" className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all text-gray-400 hover:bg-white/5 hover:text-white border border-transparent">
+            <Users className="w-5 h-5" /> View Leads
           </Link>
         </nav>
 

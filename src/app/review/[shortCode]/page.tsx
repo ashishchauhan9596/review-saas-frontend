@@ -338,7 +338,7 @@ export default function ReviewLandingPage() {
         <footer className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-6">
           <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-full border border-white/5 backdrop-blur-xl">
             <img src="/logo.png" alt="Logo" className="w-6 h-auto" />
-            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60">AI Google Review</span>
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60">ReviewStack AI</span>
           </div>
           <p className="text-[8px] text-gray-700 font-bold uppercase tracking-widest">
             Handcrafted for {business.businessName}
