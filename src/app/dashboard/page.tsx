@@ -274,7 +274,31 @@ export default function Dashboard() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const downloadQR = async (url: string, businessName: string) => {
+  const downloadFlyer = async (businessId: string, businessName: string) => {
+    try {
+      const token = await getToken();
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/businesses/${businessId}/qr/flyer`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (!response.ok) throw new Error("Failed to generate flyer");
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = `${businessName.replace(/\s+/g, '-').toLowerCase()}-marketing-flyer.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error("Download failed:", err);
+      alert("Failed to download the marketing flyer. Please try again.");
+    }
+  };
+
+  const downloadSimpleQR = async (url: string, businessName: string) => {
     if (!url) return;
     try {
       const response = await fetch(url);
@@ -404,7 +428,7 @@ export default function Dashboard() {
                 <div key={biz.id} className="group relative bg-[#0A0A0A]/40 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-8 hover:border-blue-500/30 transition-all duration-500 shadow-2xl hover:shadow-blue-500/10 flex flex-col min-h-[420px]">
                   {/* Background Accents */}
                   <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 blur-[60px] rounded-full pointer-events-none group-hover:bg-blue-600/10 transition-colors" />
-                  
+
                   <div className="flex items-start gap-6 mb-8 relative z-10">
                     <div className="flex-shrink-0">
                       {biz.logoUrl ? (
@@ -428,7 +452,7 @@ export default function Dashboard() {
                           {biz.category}
                         </span>
                       </div>
-                      <h3 
+                      <h3
                         className="text-xl sm:text-2xl font-black tracking-tight leading-tight group-hover:text-blue-400 transition-all duration-500 truncate group-hover:whitespace-normal group-hover:overflow-visible"
                         title={biz.businessName}
                       >
@@ -469,25 +493,25 @@ export default function Dashboard() {
 
                   <div className="flex gap-4 mt-auto relative z-10">
                     <button
-                      onClick={() => downloadQR(biz.qrCodeUrl || "", biz.businessName)}
-                      className="flex-1 bg-white/5 hover:bg-white/10 border border-white/5 py-4 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-[0.98] group/dl"
+                      onClick={() => downloadFlyer(biz.id, biz.businessName)}
+                      className="flex-1 bg-white/5 hover:bg-white/10 border border-white/5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-[0.98] group/dl"
                     >
                       <Download className="w-4 h-4 group-hover/dl:translate-y-0.5 transition-transform text-blue-500" />
-                      Download QR
+                      Get Marketing Flyer QR Code
                     </button>
                     <div className="flex gap-2">
                       <button
-                        onClick={() => setSelectedPreviewCode(biz.shortCode)}
+                        onClick={() => downloadSimpleQR(biz.qrCodeUrl || "", biz.businessName)}
                         className="w-14 h-14 bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl flex items-center justify-center transition-all active:scale-[0.98]"
-                        title="Live Preview"
+                        title="Download Simple QR"
                       >
-                        <ExternalLink className="w-6 h-6 text-gray-400" />
+                        <QrCode className="w-6 h-6 text-gray-400" />
                       </button>
                       <Link
                         href={`/review/${biz.shortCode}`}
                         target="_blank"
                         className="w-14 h-14 bg-blue-600 hover:bg-blue-500 rounded-2xl flex items-center justify-center transition-all shadow-xl shadow-blue-500/20 active:scale-[0.98]"
-                        title="Open in New Tab"
+                        title="Open Review Page"
                       >
                         <Zap className="w-6 h-6 text-white fill-current" />
                       </Link>
