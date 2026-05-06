@@ -298,7 +298,8 @@ export default function Dashboard() {
       case "Hotel": return <Hotel className="w-4 h-4" />;
       case "Medical": return <Stethoscope className="w-4 h-4" />;
       case "Retail": return <ShoppingBag className="w-4 h-4" />;
-      default: return <Utensils className="w-4 h-4" />;
+      case "Restaurant": return <Utensils className="w-4 h-4" />;
+      default: return <Building2 className="w-4 h-4" />;
     }
   };
 
@@ -398,80 +399,99 @@ export default function Dashboard() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-8">
               {businesses.map((biz) => (
-                <div key={biz.id} className="group relative bg-[#0A0A0A] border border-white/5 rounded-[32px] p-8 hover:border-blue-500/30 transition-all duration-500 shadow-xl hover:shadow-blue-500/5">
-                  <div className="flex items-start justify-between mb-8">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="px-3 py-1 rounded-full bg-blue-600/10 text-blue-400 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 border border-blue-500/10">
-                          {getCategoryIcon(biz.category)}
-                          {biz.category}
-                        </span>
-                        <button
-                          onClick={() => setSelectedPreviewCode(biz.shortCode)}
-                          className="px-3 py-1 rounded-full bg-white/5 text-gray-400 text-[10px] font-bold uppercase tracking-wider border border-white/5 hover:bg-white/10 transition-all flex items-center gap-1.5"
-                        >
-                          <ExternalLink className="w-3 h-3" />
-                          Live Preview
-                        </button>
-                      </div>
-                      <h3 className="text-xl font-bold mb-2 truncate group-hover:text-blue-400 transition-colors">{biz.businessName}</h3>
-                      <div className="flex items-center gap-4 text-gray-500 text-xs">
-                        <div className="flex items-center gap-1.5">
-                          <QrCode className="w-3.5 h-3.5" />
-                          <span className="font-mono">{biz.shortCode}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Activity className="w-3.5 h-3.5" />
-                          <span>{biz._count?.scanEvents || 0} scans</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col items-center gap-4">
+                <div key={biz.id} className="group relative bg-[#0A0A0A]/40 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-8 hover:border-blue-500/30 transition-all duration-500 shadow-2xl hover:shadow-blue-500/10 flex flex-col min-h-[420px]">
+                  {/* Background Accents */}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 blur-[60px] rounded-full pointer-events-none group-hover:bg-blue-600/10 transition-colors" />
+                  
+                  <div className="flex items-start gap-6 mb-8 relative z-10">
+                    <div className="flex-shrink-0">
                       {biz.logoUrl ? (
-                        <img
-                          src={biz.logoUrl}
-                          alt={biz.businessName}
-                          className="w-20 h-20 rounded-2xl object-cover bg-white p-1 border border-white/10 shadow-lg"
-                        />
+                        <div className="w-20 h-20 rounded-3xl bg-white p-1.5 shadow-2xl border border-white/10 group-hover:scale-105 transition-transform duration-500">
+                          <img
+                            src={biz.logoUrl}
+                            alt={biz.businessName}
+                            className="w-full h-full rounded-2xl object-contain"
+                          />
+                        </div>
                       ) : (
-                        <div className="w-20 h-20 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">
-                          <Building2 className="w-8 h-8 text-gray-600" />
+                        <div className="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:scale-105 transition-transform duration-500">
+                          <Building2 className="w-10 h-10 text-white/20" />
                         </div>
                       )}
                     </div>
+                    <div className="flex-1 min-w-0 flex flex-col justify-center h-20">
+                      <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                        <span className="px-3 py-1 rounded-full bg-blue-600/10 text-blue-400 text-[10px] font-black uppercase tracking-widest border border-blue-500/10 flex items-center gap-1.5">
+                          {getCategoryIcon(biz.category)}
+                          {biz.category}
+                        </span>
+                      </div>
+                      <h3 
+                        className="text-xl sm:text-2xl font-black tracking-tight leading-tight group-hover:text-blue-400 transition-all duration-500 truncate group-hover:whitespace-normal group-hover:overflow-visible"
+                        title={biz.businessName}
+                      >
+                        {biz.businessName}
+                      </h3>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-3 p-4 rounded-2xl bg-black/40 border border-white/5 mb-6">
-                    <Globe className="w-4 h-4 text-gray-500" />
-                    <span className="text-[11px] text-gray-400 truncate flex-1 font-mono uppercase">
+                  <div className="grid grid-cols-2 gap-4 mb-8 relative z-10">
+                    <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 group-hover:bg-white/[0.04] transition-colors">
+                      <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Total Scans</p>
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                        <span className="text-xl font-black">{biz._count?.scanEvents || 0}</span>
+                      </div>
+                    </div>
+                    <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 group-hover:bg-white/[0.04] transition-colors">
+                      <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">ID Code</p>
+                      <div className="flex items-center gap-2">
+                        <QrCode className="w-4 h-4 text-blue-500/50" />
+                        <span className="text-sm font-mono font-bold tracking-wider">{biz.shortCode}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 p-4 rounded-2xl bg-black/40 border border-white/5 mb-8 relative z-10 group/url">
+                    <Globe className="w-4 h-4 text-gray-500 group-hover/url:text-blue-400 transition-colors" />
+                    <span className="text-[11px] text-gray-400 truncate flex-1 font-mono uppercase tracking-tighter">
                       {biz.googlePlaceId}
                     </span>
                     <button
                       onClick={() => copyToClipboard(biz.googlePlaceId, biz.id)}
-                      className="p-1.5 rounded-lg hover:bg-white/10 text-gray-500 hover:text-white transition-all"
+                      className="p-2 rounded-xl hover:bg-white/10 text-gray-500 hover:text-white transition-all active:scale-90"
                     >
                       {copiedId === biz.id ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
                     </button>
                   </div>
 
-                  <div className="flex gap-3">
+                  <div className="flex gap-4 mt-auto relative z-10">
                     <button
                       onClick={() => downloadQR(biz.qrCodeUrl || "", biz.businessName)}
-                      className="flex-1 bg-white/5 hover:bg-white/10 border border-white/5 py-4 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition-all group"
+                      className="flex-1 bg-white/5 hover:bg-white/10 border border-white/5 py-4 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-[0.98] group/dl"
                     >
-                      <Download className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
+                      <Download className="w-4 h-4 group-hover/dl:translate-y-0.5 transition-transform text-blue-500" />
                       Download QR
                     </button>
-                    <Link
-                      href={`/review/${biz.shortCode}`}
-                      target="_blank"
-                      className="w-14 h-14 bg-blue-600 hover:bg-blue-500 rounded-2xl flex items-center justify-center transition-all shadow-lg shadow-blue-500/20"
-                    >
-                      <ExternalLink className="w-6 h-6 text-white" />
-                    </Link>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setSelectedPreviewCode(biz.shortCode)}
+                        className="w-14 h-14 bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl flex items-center justify-center transition-all active:scale-[0.98]"
+                        title="Live Preview"
+                      >
+                        <ExternalLink className="w-6 h-6 text-gray-400" />
+                      </button>
+                      <Link
+                        href={`/review/${biz.shortCode}`}
+                        target="_blank"
+                        className="w-14 h-14 bg-blue-600 hover:bg-blue-500 rounded-2xl flex items-center justify-center transition-all shadow-xl shadow-blue-500/20 active:scale-[0.98]"
+                        title="Open in New Tab"
+                      >
+                        <Zap className="w-6 h-6 text-white fill-current" />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               ))}

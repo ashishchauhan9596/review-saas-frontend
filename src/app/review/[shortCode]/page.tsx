@@ -204,11 +204,16 @@ export default function ReviewLandingPage() {
             <div className="bg-white/[0.03] border border-white/10 rounded-[2rem] p-6 flex flex-col items-center text-center backdrop-blur-xl h-full justify-center shadow-2xl relative overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               {business.logoUrl && (
-                <img
-                  src={business.logoUrl}
-                  alt={business.businessName}
-                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl mb-4 object-cover border border-white/10 shadow-lg relative z-10"
-                />
+                <div className="relative group/logo mb-6">
+                  <div className="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full opacity-0 group-hover/logo:opacity-100 transition-opacity duration-700" />
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 bg-white p-2 sm:p-3 rounded-[2.5rem] shadow-2xl border border-white/20 relative z-10 transform group-hover/logo:rotate-3 transition-transform duration-500">
+                    <img
+                      src={business.logoUrl}
+                      alt={business.businessName}
+                      className="w-full h-full object-contain rounded-[1.5rem]"
+                    />
+                  </div>
+                </div>
               )}
               <h1 className="text-2xl sm:text-3xl font-black mb-2 tracking-tighter leading-tight relative z-10">{business.businessName}</h1>
               <div className="flex items-center gap-1.5 text-blue-400 font-bold text-[10px] uppercase tracking-widest relative z-10">
