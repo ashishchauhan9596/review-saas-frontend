@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
-import { 
-  Star, 
-  MessageSquare, 
-  Copy, 
-  ExternalLink, 
-  Check, 
+import {
+  Star,
+  MessageSquare,
+  Copy,
+  ExternalLink,
+  Check,
   Loader2,
   Sparkles,
   Coffee,
@@ -42,7 +42,7 @@ export default function ReviewLandingPage() {
     { name: "Pahadi", code: "ph", flag: "⛰️" },
   ];
 
-  const [aiTags, setAiTags] = useState<{id: string, label: string, icon: string}[]>([]);
+  const [aiTags, setAiTags] = useState<{ id: string, label: string, icon: string }[]>([]);
   const [initialTagsLoaded, setInitialTagsLoaded] = useState(false);
 
   const fetchBusinessAndTags = useCallback(async () => {
@@ -56,7 +56,7 @@ export default function ReviewLandingPage() {
       // 2. Fetch AI tags in the SELECTED LANGUAGE
       setInitialTagsLoaded(false); // Show skeleton while fetching
       setSelectedTags([]); // Clear old selections on language change
-      
+
       const tagsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/public/tags/${shortCode}?lang=${selectedLanguage}`);
       if (tagsRes.ok) {
         const tagsData = await tagsRes.json();
@@ -78,16 +78,16 @@ export default function ReviewLandingPage() {
   const tags = aiTags; // Use the AI-generated tags!
 
   const toggleTag = (label: string) => {
-    setSelectedTags(prev => 
-      prev.includes(label) 
-        ? prev.filter(t => t !== label) 
+    setSelectedTags(prev =>
+      prev.includes(label)
+        ? prev.filter(t => t !== label)
         : [...prev, label]
     );
   };
 
   const generateReview = async () => {
     if (selectedTags.length < 4) return;
-    
+
     setIsGenerating(true);
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/public/review`, {
@@ -118,7 +118,7 @@ export default function ReviewLandingPage() {
     setTimeout(() => {
       // Priority 1: Direct Google Maps URL (Review Tab link)
       let googleUrl = business?.googleMapsUrl;
-      
+
       // Priority 2: If no direct link, check if googlePlaceId is actually a URL
       if (!googleUrl) {
         if (business?.googlePlaceId.startsWith('http')) {
@@ -128,7 +128,7 @@ export default function ReviewLandingPage() {
           googleUrl = `https://search.google.com/local/writereview?placeid=${business?.googlePlaceId}`;
         }
       }
-      
+
       window.location.href = googleUrl;
     }, 1500);
   };
@@ -173,13 +173,13 @@ export default function ReviewLandingPage() {
       {/* Background Magic - Wide Orbs */}
       <div className="absolute top-[-20%] left-[-10%] w-[100%] h-[100%] bg-blue-600/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-20%] right-[-10%] w-[100%] h-[100%] bg-purple-600/5 rounded-full blur-[120px] pointer-events-none" />
-      
+
       {/* 50 Animated Floating Particles (Love & Magic) */}
       {[...Array(50)].map((_, i) => {
         const Icon = [Heart, Star, Sparkles, Zap][i % 4];
         const colors = ["text-blue-500", "text-purple-500", "text-pink-500", "text-yellow-500"];
         return (
-          <div 
+          <div
             key={i}
             className={`absolute opacity-[0.05] animate-pulse pointer-events-none ${colors[i % 4]}`}
             style={{
@@ -198,15 +198,15 @@ export default function ReviewLandingPage() {
       <div className="w-full max-w-4xl relative z-10 flex flex-col gap-4">
         {/* Main Bento Container */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-          
+
           {/* Left Column: Profile & Language (30%) */}
           <div className="md:col-span-4 flex flex-col gap-4">
             <div className="bg-white/[0.03] border border-white/10 rounded-[2rem] p-6 flex flex-col items-center text-center backdrop-blur-xl h-full justify-center shadow-2xl relative overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               {business.logoUrl && (
-                <img 
-                  src={business.logoUrl} 
-                  alt={business.businessName} 
+                <img
+                  src={business.logoUrl}
+                  alt={business.businessName}
                   className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl mb-4 object-cover border border-white/10 shadow-lg relative z-10"
                 />
               )}
@@ -217,27 +217,26 @@ export default function ReviewLandingPage() {
               </div>
             </div>
 
-            <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 backdrop-blur-xl">
-              <h2 className="text-xs font-black mb-4 text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                <Globe className="w-4 h-4 text-blue-400" /> 
+            <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 sm:p-6 backdrop-blur-xl">
+              <h2 className="text-[15px] font-black mb-3 text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                <Globe className="w-4 h-4 text-blue-400" />
                 {selectedLanguage === "Hindi" ? "भाषा चुनें" : selectedLanguage === "Pahadi" ? "बोली चुणा" : "Select Language"}
               </h2>
               <div className="flex flex-wrap gap-2">
                 {languages.map((lang) => (
                   <button
                     key={lang.code}
-                    onClick={() => { 
+                    onClick={() => {
                       if (selectedLanguage !== lang.name) {
                         setSelectedLanguage(lang.name);
-                        setInitialTagsLoaded(false); 
+                        setInitialTagsLoaded(false);
                       }
                     }}
-                    className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border transition-all text-xs font-bold ${
-                      selectedLanguage === lang.name ? "bg-white text-black border-white shadow-lg" : "bg-white/5 border-white/5 text-gray-400"
-                    }`}
+                    className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border transition-all text-xs font-bold ${selectedLanguage === lang.name ? "bg-white text-black border-white shadow-md" : "bg-white/5 border-white/5 text-gray-400 hover:bg-white/10"
+                      }`}
                   >
                     <span>{lang.flag}</span>
-                    <span className="hidden sm:inline">{lang.name}</span>
+                    <span>{lang.name}</span>
                   </button>
                 ))}
               </div>
@@ -248,14 +247,14 @@ export default function ReviewLandingPage() {
           <div className="md:col-span-8 flex flex-col gap-4">
             <div className="bg-white/[0.03] border border-white/10 rounded-[2rem] p-6 sm:p-8 backdrop-blur-xl shadow-2xl relative flex-1">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl sm:text-2xl font-black flex items-center gap-2 uppercase tracking-tight">
+                <h2 className="text-lg sm:text-2xl font-black flex items-center gap-2 uppercase tracking-tight">
                   <Sparkles className="w-5 h-5 text-yellow-400" />
-                  {selectedLanguage === "Hindi" ? "आपको क्या पसंद आया?" : 
-                   selectedLanguage === "Pahadi" ? "तुसां जो क्या पसंद आया?" : 
-                   "What did you love?"}
+                  {selectedLanguage === "Hindi" ? "आपको क्या पसंद आया?" :
+                    selectedLanguage === "Pahadi" ? "तुसां जो क्या पसंद आया?" :
+                      "What did you love?"}
                 </h2>
-                <div className="bg-blue-600/20 px-4 py-1 rounded-full border border-blue-500/30">
-                  <span className="text-sm font-black text-blue-400">{selectedTags.length}/4</span>
+                <div className="bg-blue-600/20 px-3 py-1 rounded-full border border-blue-500/30">
+                  <span className="text-xs font-black text-blue-400">{selectedTags.length}/4</span>
                 </div>
               </div>
 
@@ -269,12 +268,16 @@ export default function ReviewLandingPage() {
                     <button
                       key={tag.id}
                       onClick={() => toggleTag(tag.label)}
-                      className={`flex items-center gap-2 px-3 py-4 rounded-xl border transition-all relative group ${
-                        selectedTags.includes(tag.label) ? "bg-blue-600 border-blue-500 text-white shadow-lg" : "bg-white/5 border-white/5 text-gray-400 hover:border-white/20"
-                      }`}
+                      className={`flex items-center gap-2 sm:gap-3 p-4 sm:p-5 rounded-xl sm:rounded-[1.5rem] border transition-all duration-300 relative group overflow-hidden ${selectedTags.includes(tag.label) ? "bg-blue-600 border-blue-500 text-white shadow-lg" : "bg-white/5 border-white/5 text-gray-400 hover:border-white/20"
+                        }`}
                     >
-                      <span className="text-xl sm:text-2xl">{tag.icon}</span>
-                      <span className="font-black text-[10px] sm:text-[11px] uppercase tracking-tight text-left leading-tight">{tag.label}</span>
+                      <span className="text-xl sm:text-2xl transition-transform group-hover:scale-110">{tag.icon}</span>
+                      <span className={`font-black uppercase tracking-tight text-left leading-tight ${selectedLanguage === "English"
+                        ? "text-[10px] sm:text-xs"
+                        : "text-[14px] sm:text-[16px]"
+                        }`}>
+                        {tag.label}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -283,12 +286,12 @@ export default function ReviewLandingPage() {
               <button
                 onClick={generateReview}
                 disabled={selectedTags.length < 4 || isGenerating}
-                className="w-full mt-8 bg-blue-600 hover:bg-blue-500 disabled:bg-white/5 disabled:text-gray-700 py-4 sm:py-5 rounded-2xl font-black text-sm sm:text-lg transition-all flex items-center justify-center gap-3 shadow-xl active:scale-[0.98]"
+                className="w-full mt-6 sm:mt-10 bg-blue-600 hover:bg-blue-500 disabled:bg-white/5 disabled:text-gray-700 py-4 sm:py-5 rounded-xl sm:rounded-[1.5rem] font-black text-sm sm:text-lg transition-all flex items-center justify-center gap-3 shadow-xl active:scale-[0.98]"
               >
                 {isGenerating ? <Loader2 className="w-6 h-6 animate-spin" /> : <Zap className="w-5 h-5 fill-current" />}
-                {selectedLanguage === "Hindi" ? "AI समीक्षा तैयार करें" : 
-                 selectedLanguage === "Pahadi" ? "AI समीक्षा बणावा" : 
-                 "GENERATE AI REVIEW"}
+                {selectedLanguage === "Hindi" ? "AI समीक्षा तैयार करें" :
+                  selectedLanguage === "Pahadi" ? "AI समीक्षा बणावा" :
+                    "GENERATE AI REVIEW"}
               </button>
             </div>
           </div>
@@ -296,29 +299,29 @@ export default function ReviewLandingPage() {
 
         {/* AI Result - Full Width Bottom */}
         {aiReview && (
-          <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white rounded-[2rem] p-6 sm:p-10 shadow-2xl animate-in fade-in zoom-in-95 duration-500 relative overflow-hidden group">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white rounded-[2rem] p-6 sm:p-10 shadow-2xl animate-in fade-in zoom-in-95 duration-500 relative overflow-hidden group mt-4">
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-               <Zap className="w-32 h-32 rotate-12" />
+              <Zap className="w-32 h-32 rotate-12" />
             </div>
             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
               <div className="flex-1">
                 <h2 className="text-[10px] font-black text-white/60 uppercase tracking-[0.3em] mb-4">
-                  {selectedLanguage === "Hindi" ? "तैयार समीक्षा" : 
-                   selectedLanguage === "Pahadi" ? "बणी दी समीक्षा" : 
-                   "Magic Ready"}
+                  {selectedLanguage === "Hindi" ? "तैयार समीक्षा" :
+                    selectedLanguage === "Pahadi" ? "बणी दी समीक्षा" :
+                      "Magic Ready"}
                 </h2>
                 <p className="text-xl sm:text-2xl font-bold leading-tight tracking-tight italic">"{aiReview}"</p>
               </div>
               <button
                 onClick={handleCopyAndRedirect}
-                className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-5 rounded-2xl font-black text-base transition-all shadow-2xl flex items-center gap-3 whitespace-nowrap"
+                className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-5 rounded-2xl font-black text-base sm:text-lg transition-all shadow-2xl flex items-center gap-3 whitespace-nowrap active:scale-[0.95]"
               >
-                {copied ? 
-                  (selectedLanguage === "Hindi" ? "नकल हो गई!" : selectedLanguage === "Pahadi" ? "नकल हुई गी!" : "Copied!") : 
-                  <><Copy className="w-5 h-5" /> 
-                    {selectedLanguage === "Hindi" ? "कॉपी और पोस्ट" : 
-                     selectedLanguage === "Pahadi" ? "कॉपी करी के पोस्ट करा" : 
-                     "Copy & Post"}
+                {copied ?
+                  (selectedLanguage === "Hindi" ? "नकल हो गई!" : selectedLanguage === "Pahadi" ? "नकल हुई गी!" : "Copied!") :
+                  <><Copy className="w-5 h-5" />
+                    {selectedLanguage === "Hindi" ? "कॉपी और पोस्ट" :
+                      selectedLanguage === "Pahadi" ? "कॉपी करी के पोस्ट करा" :
+                        "Copy & Post"}
                   </>
                 }
               </button>

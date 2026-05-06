@@ -5,7 +5,14 @@ import { NextResponse } from "next/server";
 const ADMIN_EMAIL = "ashishchauhan9596@gmail.com";
 
 // Public routes - these must always be accessible so the sign-out can happen on the client
-const isPublicRoute = createRouteMatcher(["/", "/sign-in(.*)", "/sign-up(.*)", "/sso-callback(.*)"]);
+const isPublicRoute = createRouteMatcher([
+  "/", 
+  "/sign-in(.*)", 
+  "/sign-up(.*)", 
+  "/sso-callback(.*)",
+  "/review/(.*)",
+  "/api/public/(.*)"
+]);
 
 export const proxy = clerkMiddleware(async (auth, req) => {
   try {
