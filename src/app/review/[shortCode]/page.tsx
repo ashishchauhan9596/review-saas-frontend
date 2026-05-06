@@ -356,7 +356,7 @@ export default function ReviewLandingPage() {
 
               <button
                 onClick={generateReview}
-                disabled={selectedTags.length < 2 || isGenerating}
+                disabled={selectedTags.length < 2 || isGenerating || isRateLimited}
                 className="w-full mt-4 sm:mt-8 bg-white/[0.03] hover:bg-white/[0.08] disabled:opacity-20 py-3 sm:py-5 rounded-xl sm:rounded-[1.5rem] font-black text-[9px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 border border-white/5 active:scale-[0.98] text-white/40"
               >
                 {isGenerating ? <Loader2 className="w-3 h-3 animate-spin text-blue-400" /> : <Sparkles className="w-3 h-3 text-yellow-400" />}
@@ -382,7 +382,7 @@ export default function ReviewLandingPage() {
                     selectedLanguage === "Pahadi" ? "बणी दी समीक्षा" :
                       "Ready to Post"}
                 </h2>
-                {isGenerating && !aiReview ? (
+                {isGenerating ? (
                    <div className="flex flex-col items-center sm:items-start gap-3 py-4">
                      <Loader2 className="w-10 h-10 animate-spin text-white/50" />
                      <p className="text-lg font-bold animate-pulse text-white/50">Brewing your magic...</p>
