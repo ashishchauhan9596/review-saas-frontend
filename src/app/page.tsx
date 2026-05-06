@@ -54,11 +54,11 @@ const translations = {
     },
     lead: {
       title: "Ready to grow your empire?",
-      subtitle: "Join 500+ businesses scaling their reputation. Leave your contact details and our team will reach out.",
+      subtitle: "Secure your spot in the future of reputation management. Leave your contact details and our team will reach out.",
       emailLabel: "Email Address",
       phoneLabel: "Phone Number (India)",
-      emailPlaceholder: "example@company.com",
-      phonePlaceholder: "9876543210",
+      emailPlaceholder: "Enter your email",
+      phonePlaceholder: "10-digit number",
       button: "Submit Interest",
       success: "Thank you! Our team will contact you soon."
     },
@@ -99,11 +99,11 @@ const translations = {
     },
     lead: {
       title: "क्या आप तैयार हैं?",
-      subtitle: "500+ व्यवसायों के साथ जुड़ें। अपना विवरण छोड़ें और हम आपसे संपर्क करेंगे।",
+      subtitle: "प्रतिष्ठा प्रबंधन के भविष्य में अपना स्थान सुरक्षित करें। अपना विवरण छोड़ें और हमारी टीम आपसे संपर्क करेगी।",
       emailLabel: "ईमेल एड्रेस",
       phoneLabel: "फोन नंबर (भारत)",
-      emailPlaceholder: "नाम@कंपनी.कॉम",
-      phonePlaceholder: "9876543210",
+      emailPlaceholder: "अपना ईमेल दर्ज करें",
+      phonePlaceholder: "10 अंकों का नंबर",
       button: "विवरण भेजें",
       success: "धन्यवाद! हमारी टीम जल्द ही आपसे संपर्क करेगी।"
     },
@@ -133,11 +133,20 @@ export default function LandingPage() {
     e.preventDefault();
     setFormError(null);
 
-    if (!validateEmail(email)) {
+    const hasEmail = email.trim().length > 0;
+    const hasPhone = phone.trim().length > 0;
+
+    if (!hasEmail && !hasPhone) {
+      setFormError("Please provide at least one contact method (Email or Phone).");
+      return;
+    }
+
+    if (hasEmail && !validateEmail(email)) {
       setFormError("Please enter a valid email address.");
       return;
     }
-    if (!validatePhone(phone)) {
+    
+    if (hasPhone && !validatePhone(phone)) {
       setFormError("Please enter a valid 10-digit Indian phone number.");
       return;
     }
@@ -285,81 +294,110 @@ export default function LandingPage() {
 
       {/* Lead Generation Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
-          <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={() => setShowModal(false)} />
-          <div className="relative w-full max-w-xl bg-[#0F0F0F] border border-white/10 rounded-[40px] shadow-2xl p-10 md:p-14 overflow-hidden animate-in zoom-in-95 duration-300">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-500">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-[20px]" onClick={() => setShowModal(false)} />
+          
+          {/* Outer Glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-600/10 blur-[150px] pointer-events-none rounded-full" />
+
+          <div className="relative w-full max-w-2xl bg-[#080808]/80 backdrop-blur-3xl border border-white/10 rounded-[48px] shadow-[0_0_80px_rgba(37,99,235,0.15)] overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-10 duration-500">
+            {/* Top Gradient Bar */}
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 via-purple-500 to-blue-400" />
+            
             {/* Close Button */}
             <button 
               onClick={() => setShowModal(false)}
-              className="absolute top-8 right-8 w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all group"
+              className="absolute top-8 right-8 w-12 h-12 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 flex items-center justify-center text-white/30 hover:text-white transition-all group z-20"
             >
               <X className="w-6 h-6 group-hover:rotate-90 transition-transform" />
             </button>
 
-            <div className="relative z-10">
-              <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight mb-4">
-                {t.lead.title}
-              </h2>
-              <p className="text-white/50 text-base md:text-lg mb-10">
-                {t.lead.subtitle}
-              </p>
+            <div className="p-10 md:p-16">
+              {/* Brand Header */}
+              <div className="flex items-center gap-3 mb-10 opacity-50">
+                <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+                <span className="text-xs font-black uppercase tracking-[0.3em]">ReviewStack AI</span>
+              </div>
 
-              {submitted ? (
-                <div className="flex flex-col items-center gap-6 py-10 animate-in zoom-in">
-                  <div className="w-20 h-20 rounded-[28px] bg-emerald-500/20 flex items-center justify-center">
-                    <CheckCircle2 className="w-10 h-10 text-emerald-400" />
-                  </div>
-                  <p className="text-2xl font-bold text-center">{t.lead.success}</p>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {formError && (
-                    <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-bold flex items-center gap-2 animate-in slide-in-from-top-2">
-                      <X className="w-4 h-4" />
-                      {formError}
+              <div className="relative z-10">
+                <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.1] mb-6">
+                  {t.lead.title}
+                </h2>
+                <p className="text-white/40 text-base md:text-xl mb-12 max-w-md leading-relaxed font-medium">
+                  {t.lead.subtitle}
+                </p>
+
+                {submitted ? (
+                  <div className="flex flex-col items-center gap-8 py-10 animate-in zoom-in duration-500">
+                    <div className="w-24 h-24 rounded-[32px] bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shadow-[0_0_40px_rgba(59,130,246,0.2)]">
+                      <CheckCircle2 className="w-12 h-12 text-blue-400" />
                     </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 px-1">{t.lead.emailLabel}</label>
-                    <div className="relative">
-                      <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20" />
-                      <input 
-                        type="email" 
-                        required
-                        placeholder={t.lead.emailPlaceholder}
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl pl-16 pr-6 py-5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-lg"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
+                    <div className="text-center space-y-2">
+                      <p className="text-3xl font-black tracking-tight">{t.lead.success}</p>
+                      <p className="text-white/40 font-medium">We'll reach out to your provided contact shortly.</p>
                     </div>
                   </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-8">
+                    {formError && (
+                      <div className="p-5 rounded-3xl bg-red-500/5 border border-red-500/10 text-red-400 text-sm font-bold flex items-center gap-3 animate-in slide-in-from-top-4">
+                        <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
+                        {formError}
+                      </div>
+                    )}
 
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 px-1">{t.lead.phoneLabel}</label>
-                    <div className="relative">
-                      <Phone className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20" />
-                      <input 
-                        type="tel" 
-                        required
-                        placeholder={t.lead.phonePlaceholder}
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl pl-16 pr-6 py-5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-lg"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                      />
+                    <div className="grid grid-cols-1 gap-6">
+                      <div className="group space-y-3">
+                        <label className="text-[11px] font-black uppercase tracking-[0.25em] text-white/20 px-1 group-focus-within:text-blue-400 transition-colors">
+                          {t.lead.emailLabel}
+                        </label>
+                        <div className="relative">
+                          <Mail className="absolute left-7 top-1/2 -translate-y-1/2 w-5 h-5 text-white/10 group-focus-within:text-blue-500 transition-colors" />
+                          <input 
+                            type="email" 
+                            placeholder={t.lead.emailPlaceholder}
+                            className="w-full bg-white/[0.02] border border-white/5 rounded-[28px] pl-16 pr-8 py-6 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/40 transition-all text-xl font-bold placeholder:text-white/10"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="group space-y-3">
+                        <label className="text-[11px] font-black uppercase tracking-[0.25em] text-white/20 px-1 group-focus-within:text-emerald-400 transition-colors">
+                          {t.lead.phoneLabel}
+                        </label>
+                        <div className="relative">
+                          <Phone className="absolute left-7 top-1/2 -translate-y-1/2 w-5 h-5 text-white/10 group-focus-within:text-emerald-500 transition-colors" />
+                          <input 
+                            type="tel" 
+                            placeholder={t.lead.phonePlaceholder}
+                            className="w-full bg-white/[0.02] border border-white/5 rounded-[28px] pl-16 pr-8 py-6 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500/40 transition-all text-xl font-bold placeholder:text-white/10"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  <button 
-                    disabled={loading}
-                    type="submit" 
-                    className="w-full bg-blue-600 hover:bg-blue-500 text-white py-5 rounded-2xl font-black text-xl transition-all shadow-2xl shadow-blue-500/30 flex items-center justify-center gap-3 disabled:opacity-50"
-                  >
-                    {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : t.lead.button}
-                    <ArrowUpRight className="w-6 h-6" />
-                  </button>
-                </form>
-              )}
+                    <button 
+                      disabled={loading}
+                      type="submit" 
+                      className="w-full relative group/btn overflow-hidden"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 transition-transform group-hover/btn:scale-105 duration-500" />
+                      <div className="relative flex items-center justify-center gap-4 py-6 px-10 rounded-[28px] text-white font-black text-xl shadow-[0_20px_50px_rgba(37,99,235,0.3)] group-hover/btn:shadow-[0_20px_50px_rgba(37,99,235,0.4)] transition-all">
+                        {loading ? <Loader2 className="w-7 h-7 animate-spin" /> : t.lead.button}
+                        <ArrowUpRight className="w-7 h-7 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                      </div>
+                    </button>
+                    
+                    <p className="text-center text-[10px] font-bold uppercase tracking-widest text-white/10">
+                      Private & Secure · No Spam Ever
+                    </p>
+                  </form>
+                )}
+              </div>
             </div>
           </div>
         </div>
