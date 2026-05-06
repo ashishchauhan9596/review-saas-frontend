@@ -497,7 +497,7 @@ export default function Dashboard() {
                       className="flex-1 bg-white/5 hover:bg-white/10 border border-white/5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-[0.98] group/dl"
                     >
                       <Download className="w-4 h-4 group-hover/dl:translate-y-0.5 transition-transform text-blue-500" />
-                      Get Marketing Flyer QR Code
+                      Marketing Flyer
                     </button>
                     <div className="flex gap-2">
                       <button
