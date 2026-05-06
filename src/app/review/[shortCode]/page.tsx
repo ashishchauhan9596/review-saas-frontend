@@ -370,12 +370,12 @@ export default function ReviewLandingPage() {
 
         {/* AI Result - Full Width Bottom */}
         {(aiReview || isGenerating) && (
-          <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 text-white rounded-[2.5rem] p-5 sm:p-10 shadow-2xl animate-in fade-in zoom-in-95 duration-500 relative overflow-hidden group mt-2">
+          <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 text-white rounded-[2.5rem] p-6 sm:p-10 shadow-2xl animate-in fade-in zoom-in-95 duration-500 relative overflow-hidden group mt-2">
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               <Zap className="w-32 h-32 rotate-12" />
             </div>
-            <div className="relative z-10 flex flex-col items-center sm:items-start gap-6 sm:gap-8">
-              <div className="w-full text-center sm:text-left">
+            <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-10">
+              <div className="flex-1 text-center sm:text-left">
                 <h2 className="text-[9px] font-black text-white/50 uppercase tracking-[0.4em] mb-4 flex items-center justify-center sm:justify-start gap-2">
                   <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.5)]" />
                   {selectedLanguage === "Hindi" ? "तैयार समीक्षा" :
@@ -383,12 +383,12 @@ export default function ReviewLandingPage() {
                       "Ready to Post"}
                 </h2>
                 {isGenerating && !aiReview ? (
-                   <div className="flex flex-col items-center sm:items-start gap-3 py-6">
+                   <div className="flex flex-col items-center sm:items-start gap-3 py-4">
                      <Loader2 className="w-10 h-10 animate-spin text-white/50" />
                      <p className="text-lg font-bold animate-pulse text-white/50">Brewing your magic...</p>
                    </div>
                 ) : (
-                  <p className="text-lg sm:text-2xl font-bold leading-[1.3] tracking-tight italic text-white text-pretty mb-2">
+                  <p className="text-xl sm:text-2xl font-bold leading-[1.3] tracking-tight italic text-white text-pretty">
                     "{aiReview}"
                   </p>
                 )}
