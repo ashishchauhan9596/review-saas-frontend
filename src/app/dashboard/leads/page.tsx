@@ -192,113 +192,113 @@ export default function LeadsPage() {
               <p className="text-sm font-medium">Fetching potential clients...</p>
             </div>
           ) : (
-          <div className="bg-[#0A0A0A]/40 backdrop-blur-xl border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-white/5 bg-white/[0.02]">
-                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Lead Info</th>
-                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Contact Details</th>
-                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Current Status</th>
-                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 text-right">Quick Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  {filteredLeads.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="px-8 py-20 text-center">
-                        <div className="flex flex-col items-center gap-4 text-gray-500">
-                          <Database className="w-10 h-10 opacity-20" />
-                          <p className="text-sm font-medium">No leads found in the database yet.</p>
-                        </div>
-                      </td>
+            <div className="bg-[#0A0A0A]/40 backdrop-blur-xl border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-white/5 bg-white/[0.02]">
+                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Lead Info</th>
+                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Contact Details</th>
+                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Current Status</th>
+                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 text-right">Quick Actions</th>
                     </tr>
-                  ) : (
-                    filteredLeads.map((lead) => (
-                      <tr key={lead.id} className="group hover:bg-white/[0.02] transition-colors">
-                        <td className="px-8 py-6">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-500 group-hover:text-blue-400 transition-colors">
-                              <Clock className="w-5 h-5" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-bold">{new Date(lead.createdAt).toLocaleDateString()}</p>
-                              <p className="text-[10px] text-gray-500">{lead.source}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-8 py-6">
-                          <div className="space-y-1.5">
-                            {lead.email && (
-                              <div className="flex items-center gap-2 text-sm group/contact">
-                                <Mail className="w-3.5 h-3.5 text-blue-500/50" />
-                                <a href={`mailto:${lead.email}`} className="font-medium text-white/90 hover:text-blue-400 hover:underline">{lead.email}</a>
-                                <button 
-                                  onClick={() => navigator.clipboard.writeText(lead.email!)}
-                                  className="opacity-0 group-hover/contact:opacity-100 p-1 hover:bg-white/5 rounded transition-all"
-                                >
-                                  <Copy className="w-3 h-3 text-gray-500" />
-                                </button>
-                              </div>
-                            )}
-                            {lead.phone && (
-                              <div className="flex items-center gap-2 text-sm group/contact">
-                                <Phone className="w-3.5 h-3.5 text-emerald-500/50" />
-                                <a href={`tel:${lead.phone}`} className="font-mono text-white/70 hover:text-emerald-400 hover:underline">{lead.phone}</a>
-                                <button 
-                                  onClick={() => navigator.clipboard.writeText(lead.phone!)}
-                                  className="opacity-0 group-hover/contact:opacity-100 p-1 hover:bg-white/5 rounded transition-all"
-                                >
-                                  <Copy className="w-3 h-3 text-gray-500" />
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-8 py-6">
-                          <div className="flex flex-wrap gap-2">
-                            {["New", "Contacted", "Closed"].map((s) => (
-                              <button
-                                key={s}
-                                onClick={() => updateStatus(lead.id, s)}
-                                className={`px-3 py-1 rounded-full text-[10px] font-bold border transition-all ${
-                                  lead.status === s 
-                                  ? statusColors[s] 
-                                  : "bg-white/5 text-gray-500 border-white/5 hover:bg-white/10"
-                                }`}
-                              >
-                                {lead.status === s && <Check className="w-2.5 h-2.5 inline mr-1" />}
-                                {s}
-                              </button>
-                            ))}
-                          </div>
-                        </td>
-                        <td className="px-8 py-6 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <a 
-                              href={`https://wa.me/${lead.phone?.replace(/\D/g, '')}`} 
-                              target="_blank"
-                              className="p-2.5 rounded-xl bg-emerald-600/10 text-emerald-500 hover:bg-emerald-600/20 transition-all"
-                              title="WhatsApp"
-                            >
-                              <MessageSquare className="w-4 h-4" />
-                            </a>
-                            <button 
-                              onClick={() => deleteLead(lead.id)}
-                              className="p-2.5 rounded-xl bg-red-600/10 text-red-500 hover:bg-red-600/20 transition-all"
-                              title="Delete Lead"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                  </thead>
+                  <tbody className="divide-y divide-white/5">
+                    {filteredLeads.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="px-8 py-20 text-center">
+                          <div className="flex flex-col items-center gap-4 text-gray-500">
+                            <Database className="w-10 h-10 opacity-20" />
+                            <p className="text-sm font-medium">No leads found in the database yet.</p>
                           </div>
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      filteredLeads.map((lead) => (
+                        <tr key={lead.id} className="group hover:bg-white/[0.02] transition-colors">
+                          <td className="px-8 py-6">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-500 group-hover:text-blue-400 transition-colors">
+                                <Clock className="w-5 h-5" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-bold">{new Date(lead.createdAt).toLocaleDateString()}</p>
+                                <p className="text-[10px] text-gray-500">{lead.source}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-8 py-6">
+                            <div className="space-y-1.5">
+                              {lead.email && (
+                                <div className="flex items-center gap-2 text-sm group/contact">
+                                  <Mail className="w-3.5 h-3.5 text-blue-500/50" />
+                                  <a href={`mailto:${lead.email}`} className="font-medium text-white/90 hover:text-blue-400 hover:underline">{lead.email}</a>
+                                  <button 
+                                    onClick={() => navigator.clipboard.writeText(lead.email!)}
+                                    className="opacity-0 group-hover/contact:opacity-100 p-1 hover:bg-white/5 rounded transition-all"
+                                  >
+                                    <Copy className="w-3 h-3 text-gray-500" />
+                                  </button>
+                                </div>
+                              )}
+                              {lead.phone && (
+                                <div className="flex items-center gap-2 text-sm group/contact">
+                                  <Phone className="w-3.5 h-3.5 text-emerald-500/50" />
+                                  <a href={`tel:${lead.phone}`} className="font-mono text-white/70 hover:text-emerald-400 hover:underline">{lead.phone}</a>
+                                  <button 
+                                    onClick={() => navigator.clipboard.writeText(lead.phone!)}
+                                    className="opacity-0 group-hover/contact:opacity-100 p-1 hover:bg-white/5 rounded transition-all"
+                                  >
+                                    <Copy className="w-3 h-3 text-gray-500" />
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-8 py-6">
+                            <div className="flex flex-wrap gap-2">
+                              {["New", "Contacted", "Closed"].map((s) => (
+                                <button
+                                  key={s}
+                                  onClick={() => updateStatus(lead.id, s)}
+                                  className={`px-3 py-1 rounded-full text-[10px] font-bold border transition-all ${
+                                    lead.status === s 
+                                    ? statusColors[s] 
+                                    : "bg-white/5 text-gray-500 border-white/5 hover:bg-white/10"
+                                  }`}
+                                >
+                                  {lead.status === s && <Check className="w-2.5 h-2.5 inline mr-1" />}
+                                  {s}
+                                </button>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="px-8 py-6 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <a 
+                                href={`https://wa.me/${lead.phone?.replace(/\D/g, '')}`} 
+                                target="_blank"
+                                className="p-2.5 rounded-xl bg-emerald-600/10 text-emerald-500 hover:bg-emerald-600/20 transition-all"
+                                title="WhatsApp"
+                              >
+                                <MessageSquare className="w-4 h-4" />
+                              </a>
+                              <button 
+                                onClick={() => deleteLead(lead.id)}
+                                className="p-2.5 rounded-xl bg-red-600/10 text-red-500 hover:bg-red-600/20 transition-all"
+                                title="Delete Lead"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
           )}
         </main>
       </div>

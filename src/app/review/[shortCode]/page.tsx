@@ -35,6 +35,7 @@ export default function ReviewLandingPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [error, setError] = useState<string | null>(null);
+  const [isRateLimited, setIsRateLimited] = useState(false);
 
   const languages = [
     { name: "English", code: "en", flag: "🇺🇸" },
@@ -75,6 +76,27 @@ export default function ReviewLandingPage() {
     fetchBusinessAndTags();
   }, [fetchBusinessAndTags]);
 
+  // Auto-select tags whenever they are loaded (initial load or language change)
+  useEffect(() => {
+    if (initialTagsLoaded && aiTags.length > 0 && selectedTags.length === 0) {
+      const topTags = aiTags.slice(0, 4).map(t => t.label);
+      setSelectedTags(topTags);
+    }
+  }, [initialTagsLoaded, aiTags, selectedTags.length]);
+
+  // Debounced auto-generation
+  useEffect(() => {
+    // If we are rate limited or already have an error, don't hit the API again
+    if (isRateLimited) return;
+
+    const timer = setTimeout(() => {
+      if (selectedTags.length >= 2) { // Reduce requirement to 2 tags for speed
+        generateReview();
+      }
+    }, 800); // Wait for user to stop clicking
+    return () => clearTimeout(timer);
+  }, [selectedTags, selectedLanguage, isRateLimited]);
+
   const tags = aiTags; // Use the AI-generated tags!
 
   const toggleTag = (label: string) => {
@@ -86,7 +108,8 @@ export default function ReviewLandingPage() {
   };
 
   const generateReview = async () => {
-    if (selectedTags.length < 4) return;
+    // Primary guard: Do NOT hit the API if we know we are rate limited
+    if (selectedTags.length < 2 || isRateLimited || isGenerating) return;
 
     setIsGenerating(true);
     try {
@@ -100,16 +123,44 @@ export default function ReviewLandingPage() {
         })
       });
 
-      if (response.ok) {
+      // Explicitly check for Rate Limit Status (429)
+      if (response.status === 429) {
+        setIsRateLimited(true);
         const data = await response.json();
-        setAiReview(data.review);
+        throw new Error(data.error || "Too many reviews. Please try again later.");
       }
-    } catch (err) {
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to generate review");
+      }
+
+      const data = await response.json();
+      setAiReview(data.review);
+      setError(null); // Clear any previous errors if successful
+    } catch (err: any) {
       console.error("AI Generation failed:", err);
-      setAiReview(`I had an amazing experience at ${business?.businessName}! The ${selectedTags.join(', ')} were exceptional. Highly recommended!`);
+      // Double-check error message for rate limit keywords just in case
+      if (err.message?.toLowerCase().includes("too many reviews") || err.message?.toLowerCase().includes("rate limit")) {
+        setIsRateLimited(true);
+      }
+      setError(err.message || "Failed to generate review");
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  const handlePostReview = () => {
+    if (!aiReview || !business) return;
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(aiReview);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3000);
+
+    // Open Google Maps
+    const mapsUrl = business.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query_place_id=${business.googlePlaceId}`;
+    window.open(mapsUrl, '_blank');
   };
 
   const handleCopyAndRedirect = () => {
@@ -196,6 +247,21 @@ export default function ReviewLandingPage() {
       })}
 
       <div className="w-full max-w-4xl relative z-10 flex flex-col gap-4">
+        {/* Error / Rate Limit Banner */}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 sm:p-6 backdrop-blur-xl animate-in fade-in slide-in-from-top-4 duration-300">
+            <div className="flex items-center gap-4 text-red-400">
+              <div className="p-2 rounded-lg bg-red-500/20">
+                <Zap className="w-5 h-5 fill-current" />
+              </div>
+              <div>
+                <h3 className="font-black uppercase tracking-widest text-[10px]">Attention Required</h3>
+                <p className="text-sm font-bold text-white/90">{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Main Bento Container */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
 
@@ -290,45 +356,54 @@ export default function ReviewLandingPage() {
 
               <button
                 onClick={generateReview}
-                disabled={selectedTags.length < 4 || isGenerating}
-                className="w-full mt-6 sm:mt-10 bg-blue-600 hover:bg-blue-500 disabled:bg-white/5 disabled:text-gray-700 py-4 sm:py-5 rounded-xl sm:rounded-[1.5rem] font-black text-sm sm:text-lg transition-all flex items-center justify-center gap-3 shadow-xl active:scale-[0.98]"
+                disabled={selectedTags.length < 2 || isGenerating}
+                className="w-full mt-4 sm:mt-8 bg-white/[0.03] hover:bg-white/[0.08] disabled:opacity-20 py-3 sm:py-5 rounded-xl sm:rounded-[1.5rem] font-black text-[9px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 border border-white/5 active:scale-[0.98] text-white/40"
               >
-                {isGenerating ? <Loader2 className="w-6 h-6 animate-spin" /> : <Zap className="w-5 h-5 fill-current" />}
-                {selectedLanguage === "Hindi" ? "AI समीक्षा तैयार करें" :
-                  selectedLanguage === "Pahadi" ? "AI समीक्षा बणावा" :
-                    "GENERATE AI REVIEW"}
+                {isGenerating ? <Loader2 className="w-3 h-3 animate-spin text-blue-400" /> : <Sparkles className="w-3 h-3 text-yellow-400" />}
+                {selectedLanguage === "Hindi" ? "फिर से तैयार करें" :
+                  selectedLanguage === "Pahadi" ? "दोबारा बणावा" :
+                    "REGENERATE MAGIC"}
               </button>
             </div>
           </div>
         </div>
 
         {/* AI Result - Full Width Bottom */}
-        {aiReview && (
-          <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white rounded-[2rem] p-6 sm:p-10 shadow-2xl animate-in fade-in zoom-in-95 duration-500 relative overflow-hidden group mt-4">
+        {(aiReview || isGenerating) && (
+          <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 text-white rounded-[2.5rem] p-5 sm:p-10 shadow-2xl animate-in fade-in zoom-in-95 duration-500 relative overflow-hidden group mt-2">
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               <Zap className="w-32 h-32 rotate-12" />
             </div>
-            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
-              <div className="flex-1">
-                <h2 className="text-[10px] font-black text-white/60 uppercase tracking-[0.3em] mb-4">
+            <div className="relative z-10 flex flex-col items-center sm:items-start gap-6 sm:gap-8">
+              <div className="w-full text-center sm:text-left">
+                <h2 className="text-[9px] font-black text-white/50 uppercase tracking-[0.4em] mb-4 flex items-center justify-center sm:justify-start gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.5)]" />
                   {selectedLanguage === "Hindi" ? "तैयार समीक्षा" :
                     selectedLanguage === "Pahadi" ? "बणी दी समीक्षा" :
-                      "Magic Ready"}
+                      "Ready to Post"}
                 </h2>
-                <p className="text-xl sm:text-2xl font-bold leading-tight tracking-tight italic">"{aiReview}"</p>
+                {isGenerating && !aiReview ? (
+                   <div className="flex flex-col items-center sm:items-start gap-3 py-6">
+                     <Loader2 className="w-10 h-10 animate-spin text-white/50" />
+                     <p className="text-lg font-bold animate-pulse text-white/50">Brewing your magic...</p>
+                   </div>
+                ) : (
+                  <p className="text-lg sm:text-2xl font-bold leading-[1.3] tracking-tight italic text-white text-pretty mb-2">
+                    "{aiReview}"
+                  </p>
+                )}
               </div>
               <button
-                onClick={handleCopyAndRedirect}
-                className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-5 rounded-2xl font-black text-base sm:text-lg transition-all shadow-2xl flex items-center gap-3 whitespace-nowrap active:scale-[0.95]"
+                onClick={handlePostReview}
+                disabled={!aiReview || isGenerating}
+                className="w-full sm:w-auto bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 sm:py-5 rounded-2xl font-black text-base sm:text-xl transition-all shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center justify-center gap-3 whitespace-nowrap active:scale-[0.95]"
               >
-                {copied ?
-                  (selectedLanguage === "Hindi" ? "नकल हो गई!" : selectedLanguage === "Pahadi" ? "नकल हुई गी!" : "Copied!") :
-                  <><Copy className="w-5 h-5" />
-                    {selectedLanguage === "Hindi" ? "कॉपी और पोस्ट" :
-                      selectedLanguage === "Pahadi" ? "कॉपी करी के पोस्ट करा" :
-                        "Copy & Post"}
-                  </>
-                }
+                {copied ? <Check className="w-6 h-6" /> : <Copy className="w-6 h-6" />}
+                {copied ? "COPIED!" : (
+                  selectedLanguage === "Hindi" ? "कॉपी करें और पोस्ट करें" :
+                  selectedLanguage === "Pahadi" ? "कॉपी करा कने पोस्ट करा" :
+                  "Copy & Post to Google"
+                )}
               </button>
             </div>
           </div>
