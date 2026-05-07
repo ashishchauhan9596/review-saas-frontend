@@ -48,24 +48,26 @@ export default function ReviewLandingPage() {
 
   const fetchBusinessAndTags = useCallback(async () => {
     try {
-      // 1. Fetch Business Details
-      const bizRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/public/business/${shortCode}`);
-      if (!bizRes.ok) throw new Error('Business not found');
-      const bizData = await bizRes.json();
-      setBusiness(bizData);
-
-      // 2. Fetch AI tags in the SELECTED LANGUAGE
       setInitialTagsLoaded(false); // Show skeleton while fetching
-      setSelectedTags([]); // Clear old selections on language change
+      if (selectedTags.length === 0) setLoading(true);
 
-      const tagsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/public/tags/${shortCode}?lang=${selectedLanguage}`);
-      if (tagsRes.ok) {
-        const tagsData = await tagsRes.json();
-        setAiTags(tagsData.tags);
-        setInitialTagsLoaded(true);
+      // Single High-Performance Trip to the server
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/public/discovery/${shortCode}?lang=${selectedLanguage}`);
+      
+      if (!response.ok) {
+        if (response.status === 404) throw new Error('Business not found');
+        throw new Error('Server error');
       }
+
+      const data = await response.json();
+      
+      // Update everything in one React render cycle
+      setBusiness(data.business);
+      setAiTags(data.tags);
+      setInitialTagsLoaded(true);
+      setError(null);
     } catch (err) {
-      console.error("Failed to fetch data:", err);
+      console.error("Failed to fetch discovery data:", err);
       setError("We couldn't find this business. Please check the QR code and try again.");
     } finally {
       setLoading(false);
@@ -76,26 +78,19 @@ export default function ReviewLandingPage() {
     fetchBusinessAndTags();
   }, [fetchBusinessAndTags]);
 
-  // Auto-select tags whenever they are loaded (initial load or language change)
+  const [hasGeneratedInitial, setHasGeneratedInitial] = useState(false);
+
+  // Auto-select tags and generate the first review automatically
   useEffect(() => {
-    if (initialTagsLoaded && aiTags.length > 0 && selectedTags.length === 0) {
+    if (initialTagsLoaded && aiTags.length > 0 && selectedTags.length === 0 && !hasGeneratedInitial) {
       const topTags = aiTags.slice(0, 4).map(t => t.label);
       setSelectedTags(topTags);
+
+      // Auto-generate only the VERY first time
+      setHasGeneratedInitial(true);
+      generateReview(topTags);
     }
-  }, [initialTagsLoaded, aiTags, selectedTags.length]);
-
-  // Debounced auto-generation
-  useEffect(() => {
-    // If we are rate limited or already have an error, don't hit the API again
-    if (isRateLimited) return;
-
-    const timer = setTimeout(() => {
-      if (selectedTags.length >= 2) { // Reduce requirement to 2 tags for speed
-        generateReview();
-      }
-    }, 800); // Wait for user to stop clicking
-    return () => clearTimeout(timer);
-  }, [selectedTags, selectedLanguage, isRateLimited]);
+  }, [initialTagsLoaded, aiTags, selectedTags.length, hasGeneratedInitial]);
 
   const tags = aiTags; // Use the AI-generated tags!
 
@@ -107,9 +102,11 @@ export default function ReviewLandingPage() {
     );
   };
 
-  const generateReview = async () => {
+  const generateReview = async (overrideTags?: string[]) => {
+    const tagsToUse = overrideTags || selectedTags;
+
     // Primary guard: Do NOT hit the API if we know we are rate limited
-    if (selectedTags.length < 2 || isRateLimited || isGenerating) return;
+    if (tagsToUse.length < 2 || isRateLimited || isGenerating) return;
 
     setIsGenerating(true);
     try {
@@ -118,7 +115,7 @@ export default function ReviewLandingPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           shortCode: shortCode,
-          tags: selectedTags,
+          tags: tagsToUse,
           language: selectedLanguage
         })
       });
@@ -152,7 +149,7 @@ export default function ReviewLandingPage() {
 
   const handlePostReview = () => {
     if (!aiReview || !business) return;
-    
+
     // Copy to clipboard
     navigator.clipboard.writeText(aiReview);
     setCopied(true);
@@ -355,7 +352,7 @@ export default function ReviewLandingPage() {
               )}
 
               <button
-                onClick={generateReview}
+                onClick={() => generateReview()}
                 disabled={selectedTags.length < 2 || isGenerating || isRateLimited}
                 className="w-full mt-4 sm:mt-8 bg-white/[0.03] hover:bg-white/[0.08] disabled:opacity-20 py-3 sm:py-5 rounded-xl sm:rounded-[1.5rem] font-black text-[9px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 border border-white/5 active:scale-[0.98] text-white/40"
               >
@@ -383,10 +380,10 @@ export default function ReviewLandingPage() {
                       "Ready to Post"}
                 </h2>
                 {isGenerating ? (
-                   <div className="flex flex-col items-center sm:items-start gap-3 py-4">
-                     <Loader2 className="w-10 h-10 animate-spin text-white/50" />
-                     <p className="text-lg font-bold animate-pulse text-white/50">Brewing your magic...</p>
-                   </div>
+                  <div className="flex flex-col items-center sm:items-start gap-3 py-4">
+                    <Loader2 className="w-10 h-10 animate-spin text-white/50" />
+                    <p className="text-lg font-bold animate-pulse text-white/50">Brewing your magic...</p>
+                  </div>
                 ) : (
                   <p className="text-xl sm:text-2xl font-bold leading-[1.3] tracking-tight italic text-white text-pretty">
                     "{aiReview}"
@@ -401,8 +398,8 @@ export default function ReviewLandingPage() {
                 {copied ? <Check className="w-6 h-6" /> : <Copy className="w-6 h-6" />}
                 {copied ? "COPIED!" : (
                   selectedLanguage === "Hindi" ? "कॉपी करें और पोस्ट करें" :
-                  selectedLanguage === "Pahadi" ? "कॉपी करा कने पोस्ट करा" :
-                  "Copy & Post to Google"
+                    selectedLanguage === "Pahadi" ? "कॉपी करा कने पोस्ट करा" :
+                      "Copy & Post to Google"
                 )}
               </button>
             </div>
