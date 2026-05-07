@@ -14,8 +14,10 @@ import {
   Heart,
   Zap,
   Globe,
-  Languages
+  Languages,
+  Wand2
 } from "lucide-react";
+import confetti from "canvas-confetti";
 
 interface Business {
   businessName: string;
@@ -46,6 +48,22 @@ export default function ReviewLandingPage() {
   const [aiTags, setAiTags] = useState<{ id: string, label: string, icon: string }[]>([]);
   const [initialTagsLoaded, setInitialTagsLoaded] = useState(false);
 
+  const [statusMessage, setStatusMessage] = useState("Preparing your review...");
+
+  const statusMessages = [
+    "Analyzing your unique experience...",
+    "Selecting the perfect tone...",
+    "Translating for maximum impact...",
+    "Crafting a heartfelt story...",
+    "Adding that 5-star magic...",
+    "Polishing the final sentences..."
+  ];
+
+  // Clear selected tags when language changes to prevent "hidden" selections
+  useEffect(() => {
+    setSelectedTags([]);
+  }, [selectedLanguage]);
+
   const fetchBusinessAndTags = useCallback(async () => {
     try {
       setInitialTagsLoaded(false); // Show skeleton while fetching
@@ -53,14 +71,14 @@ export default function ReviewLandingPage() {
 
       // Single High-Performance Trip to the server
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/public/discovery/${shortCode}?lang=${selectedLanguage}`);
-      
+
       if (!response.ok) {
         if (response.status === 404) throw new Error('Business not found');
         throw new Error('Server error');
       }
 
       const data = await response.json();
-      
+
       // Update everything in one React render cycle
       setBusiness(data.business);
       setAiTags(data.tags);
@@ -109,6 +127,13 @@ export default function ReviewLandingPage() {
     if (tagsToUse.length < 2 || isRateLimited || isGenerating) return;
 
     setIsGenerating(true);
+    // Start status rotation
+    let msgIndex = 0;
+    const statusInterval = setInterval(() => {
+      msgIndex = (msgIndex + 1) % statusMessages.length;
+      setStatusMessage(statusMessages[msgIndex]);
+    }, 1200);
+
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/public/review`, {
         method: 'POST',
@@ -135,6 +160,15 @@ export default function ReviewLandingPage() {
       const data = await response.json();
       setAiReview(data.review);
       setError(null); // Clear any previous errors if successful
+
+      // TRIGGER THE WOW EFFECT!
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#8B5CF6', '#EC4899', '#3B82F6']
+      });
+
     } catch (err: any) {
       console.error("AI Generation failed:", err);
       // Double-check error message for rate limit keywords just in case
@@ -144,6 +178,7 @@ export default function ReviewLandingPage() {
       setError(err.message || "Failed to generate review");
     } finally {
       setIsGenerating(false);
+      clearInterval(statusInterval);
     }
   };
 
@@ -380,9 +415,21 @@ export default function ReviewLandingPage() {
                       "Ready to Post"}
                 </h2>
                 {isGenerating ? (
-                  <div className="flex flex-col items-center sm:items-start gap-3 py-4">
-                    <Loader2 className="w-10 h-10 animate-spin text-white/50" />
-                    <p className="text-lg font-bold animate-pulse text-white/50">Brewing your magic...</p>
+                  <div className="flex flex-col items-center sm:items-start gap-4 py-6">
+                    <div className="relative">
+                      <div className="w-16 h-16 border-4 border-white/5 border-t-white/40 rounded-full animate-spin" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Wand2 className="w-6 h-6 text-white/60 animate-pulse" />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xl font-black italic text-white/80 animate-pulse">
+                        {statusMessage}
+                      </p>
+                      <p className="text-[10px] uppercase tracking-widest text-white/30 font-bold">
+                        Crafting your premium review
+                      </p>
+                    </div>
                   </div>
                 ) : (
                   <p className="text-xl sm:text-2xl font-bold leading-[1.3] tracking-tight italic text-white text-pretty">
