@@ -14,6 +14,8 @@ export const metadata: Metadata = {
   description: "Scale your Google Reviews with AI-powered synthesis and atomic deep linking.",
 };
 
+import Providers from "@/components/Providers";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -23,7 +25,9 @@ export default function RootLayout({
     <ClerkProvider afterSignOutUrl="/">
       <html lang="en" className={`${inter.variable} h-full antialiased`}>
         <body className="min-h-full flex flex-col font-[family-name:var(--font-geist-sans)]">
-          {children}
+          <Providers>
+            {children}
+          </Providers>
         </body>
       </html>
     </ClerkProvider>
