@@ -183,7 +183,7 @@ export default function ReviewLandingPage() {
     setCopied(true);
     setTimeout(() => setCopied(false), 3000);
     const mapsUrl = business?.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query_place_id=${business?.googlePlaceId}`;
-    window.open(mapsUrl, '_blank');
+    window.location.href = mapsUrl;
   };
 
   const getMoodPresets = () => {
